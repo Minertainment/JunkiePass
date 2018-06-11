@@ -2,26 +2,29 @@ package com.minejunkie.junkiepass.challenges;
 
 import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public abstract class Challenge<T extends Event> implements Listener {
+public abstract class Challenge implements Listener {
 
-    private JunkiePass plugin;
+    private transient JunkiePass plugin;
+    private String name;
     private double amount;
     private double experience;
-    private ArrayList<Double> milestones;
+    private List<Double> milestones;
 
-    public Challenge(JunkiePass plugin, double amount, double experience) {
-        this(plugin, amount, experience, new ArrayList<>());
+    public Challenge(JunkiePass plugin, String name, double amount, double experience) {
+        this(plugin, name, amount, experience, new ArrayList<>());
     }
 
-    public Challenge(JunkiePass plugin, double amount, double experience, ArrayList<Double> milestones) {
+    public Challenge(JunkiePass plugin, String name, double amount, double experience, ArrayList<Double> milestones) {
         this.plugin = plugin;
+        this.name = name;
         this.amount = amount;
         this.experience = experience;
         this.milestones = milestones;
@@ -29,16 +32,38 @@ public abstract class Challenge<T extends Event> implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
-    public abstract void onIncrement(T event);
+    public void increment(JunkiePassProfile profile, Player player, ChallengeData data, double amount) {
+        if (data.complete(amount) >= this.amount) {
+            onComplete(profile, player);
+            return;
+        }
 
-    public void onComplete(JunkiePassProfile profile, UUID uuid) {
-        profile.addJunkiePassExperience(getExperience());
+        if (milestones.isEmpty()) return;
+
+        if (milestones.contains(data.getAmount())) {
+            onMilestone(player, data);
+        }
+    }
+
+    // Can be overridden if the double needs to be more precise.
+    public void onMilestone(Player player, ChallengeData data) {
+        player.sendMessage(
+                String.format(getPlugin().getPrefix() + ChatColor.GOLD + ChatColor.BOLD.toString() + name + ": " + ChatColor.GREEN + "Milestone Achieved " + ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "%d" + ChatColor.DARK_GRAY + "/" + ChatColor.GOLD + "%d" + ChatColor.DARK_GRAY + "]", (int) Math.round(data.getAmount()), (int) Math.round(getAmount()))
+        );
+    }
+
+    public void onComplete(JunkiePassProfile profile, Player player) {
+        profile.addJunkiePassExperience(experience);
         profile.removeChallenge(this.getClass());
+        player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have completed the " + ChatColor.GOLD + ChatColor.BOLD.toString() + name + "! " + ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + experience + " XP" + ChatColor.DARK_GRAY + "]");
     }
 
     public JunkiePass getPlugin() {
         return plugin;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public double getAmount() {
@@ -49,11 +74,12 @@ public abstract class Challenge<T extends Event> implements Listener {
         return experience;
     }
 
-    public ArrayList<Double> getMilestones() {
+    public List<Double> getMilestones() {
         return milestones;
     }
 
     public JunkiePassProfile getProfile(UUID uuid) {
         return getPlugin().getProfileManager().getProfile(uuid);
     }
+
 }

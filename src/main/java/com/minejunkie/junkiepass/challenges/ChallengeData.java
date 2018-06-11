@@ -4,6 +4,10 @@ public class ChallengeData {
 
     private double amount;
 
+    public ChallengeData() {
+        this(0);
+    }
+
     public ChallengeData(double amount) {
         this.amount = amount;
     }
@@ -16,7 +20,4 @@ public class ChallengeData {
         return this.amount += amount;
     }
 
-    public double completeOne() {
-        return ++amount;
-    }
 }
