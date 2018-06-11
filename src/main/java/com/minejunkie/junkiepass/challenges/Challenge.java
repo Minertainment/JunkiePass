@@ -5,25 +5,26 @@ import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import sun.reflect.generics.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Challenge implements Listener {
 
     private transient JunkiePass plugin;
+    private ChallengeType type;
     private String name;
     private double amount;
     private double experience;
-    private List<Double> milestones;
+    private TreeSet<Double> milestones;
 
-    public Challenge(JunkiePass plugin, String name, double amount, double experience) {
-        this(plugin, name, amount, experience, new ArrayList<>());
+    public Challenge(JunkiePass plugin, ChallengeType type, String name, double amount, double experience) {
+        this(plugin, type, name, amount, experience, new TreeSet<>());
     }
 
-    public Challenge(JunkiePass plugin, String name, double amount, double experience, ArrayList<Double> milestones) {
+    public Challenge(JunkiePass plugin, ChallengeType type, String name, double amount, double experience, TreeSet<Double> milestones) {
         this.plugin = plugin;
+        this.type = type;
         this.name = name;
         this.amount = amount;
         this.experience = experience;
@@ -33,16 +34,20 @@ public abstract class Challenge implements Listener {
     }
 
     public void increment(JunkiePassProfile profile, Player player, ChallengeData data, double amount) {
-        if (data.complete(amount) >= this.amount) {
+        if(!milestones.isEmpty() && data.getAmount() + amount < this.amount) {
+            Iterator<Double> iter = milestones.descendingIterator();
+            while (iter.hasNext()) {
+                double milestone = iter.next();
+                if(data.getAmount() < milestone && data.getAmount() + amount >= milestone) {
+                    data.complete(amount);
+                    onMilestone(player, data);
+                    return;
+                }
+            }
+        }
+
+        if (data.complete(amount) >= this.amount)
             onComplete(profile, player);
-            return;
-        }
-
-        if (milestones.isEmpty()) return;
-
-        if (milestones.contains(data.getAmount())) {
-            onMilestone(player, data);
-        }
     }
 
     // Can be overridden if the double needs to be more precise.
@@ -62,6 +67,10 @@ public abstract class Challenge implements Listener {
         return plugin;
     }
 
+    public ChallengeType getType() {
+        return type;
+    }
+
     public String getName() {
         return name;
     }
@@ -74,12 +83,11 @@ public abstract class Challenge implements Listener {
         return experience;
     }
 
-    public List<Double> getMilestones() {
+    public TreeSet<Double> getMilestones() {
         return milestones;
     }
 
     public JunkiePassProfile getProfile(UUID uuid) {
         return getPlugin().getProfileManager().getProfile(uuid);
     }
-
 }

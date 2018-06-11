@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public class JunkiePassProfile extends Profile {
 
+    // TODO weeklyChallenges
+
     private HashMap<Class, ChallengeData> challenges = new HashMap<>();
     private double junkiePassExperience;
 
