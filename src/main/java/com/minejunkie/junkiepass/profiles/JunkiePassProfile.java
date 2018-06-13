@@ -12,6 +12,7 @@ public class JunkiePassProfile extends Profile {
 
     private HashMap<Class, ChallengeData> challenges = new HashMap<>();
     private double junkiePassExperience;
+    private int junkiePassTier;
 
     public JunkiePassProfile(UUID uuid) {
         super(uuid);
@@ -39,5 +40,17 @@ public class JunkiePassProfile extends Profile {
 
     public void addJunkiePassExperience(double junkiePassExperience) {
         this.junkiePassExperience += junkiePassExperience;
+    }
+
+    public void updateJunkiePassTier() {
+        junkiePassTier = (int) junkiePassExperience / 10;
+    }
+
+    public int getJunkiePassTier() {
+        return junkiePassTier;
+    }
+
+    public void setJunkiePassTier(int junkiePassTier) {
+        this.junkiePassTier = junkiePassTier;
     }
 }

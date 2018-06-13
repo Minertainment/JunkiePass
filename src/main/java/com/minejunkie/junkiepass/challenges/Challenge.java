@@ -5,9 +5,10 @@ import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import sun.reflect.generics.tree.Tree;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.UUID;
 
 public abstract class Challenge implements Listener {
 
@@ -61,6 +62,14 @@ public abstract class Challenge implements Listener {
         profile.addJunkiePassExperience(experience);
         profile.removeChallenge(this.getClass());
         player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have completed the " + ChatColor.GOLD + ChatColor.BOLD.toString() + name + "! " + ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + experience + " XP" + ChatColor.DARK_GRAY + "]");
+
+        int oldTier = profile.getJunkiePassTier();
+        profile.updateJunkiePassTier();
+
+        // If it has changed...
+        if (oldTier != profile.getJunkiePassTier()) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have reached" + ChatColor.GOLD + ChatColor.BOLD.toString() + " Tier " + profile.getJunkiePassTier() + ".");
+        }
     }
 
     public JunkiePass getPlugin() {

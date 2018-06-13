@@ -10,7 +10,6 @@ import com.minertainment.obj.ShardType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;
 
