@@ -11,8 +11,9 @@ public class JunkiePassProfile extends Profile {
     // TODO weeklyChallenges
 
     private HashMap<Class, ChallengeData> challenges = new HashMap<>();
-    private double junkiePassExperience;
-    private int junkiePassTier;
+    private double junkiePassExperience = 10;
+    private int junkiePassTier = 1;
+    private boolean isPaid;
 
     public JunkiePassProfile(UUID uuid) {
         super(uuid);
@@ -52,5 +53,13 @@ public class JunkiePassProfile extends Profile {
 
     public void setJunkiePassTier(int junkiePassTier) {
         this.junkiePassTier = junkiePassTier;
+    }
+
+    public boolean isPaid() {
+        return isPaid;
+    }
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
     }
 }

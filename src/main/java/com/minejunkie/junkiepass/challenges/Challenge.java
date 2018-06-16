@@ -2,6 +2,8 @@ package com.minejunkie.junkiepass.challenges;
 
 import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
+import com.minejunkie.junkiepass.tiers.Tier;
+import com.minejunkie.junkiepass.tiers.TierConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -69,6 +71,28 @@ public abstract class Challenge implements Listener {
         // If it has changed...
         if (oldTier != profile.getJunkiePassTier()) {
             player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have reached" + ChatColor.GOLD + ChatColor.BOLD.toString() + " Tier " + profile.getJunkiePassTier() + ".");
+            Tier tier = TierConfig.getTiers()[profile.getJunkiePassTier() - 1];
+
+            // TODO Add event for when their experience is changed.
+            // TODO Add a way to claim rewards if their inventory is full.
+            boolean gifted = false;
+            if (tier.hasFreeRewards() && !tier.getFreeRewards().isEmpty()) {
+                for (String s : tier.getFreeRewards()) {
+                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), s.replaceAll("@p", player.getName()));
+                }
+                gifted = true;
+            }
+
+            if (profile.isPaid() || player.hasPermission("minejunkie.junkiepass")) {
+                if (tier.hasPaidRewards() && !tier.getPaidRewards().isEmpty()) {
+                    for (String s : tier.getPaidRewards()) {
+                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), s.replaceAll("@p", player.getName()));
+                    }
+                    gifted = true;
+                }
+            }
+
+            if (gifted) player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "Your rewards have been gifted.");
         }
     }
 

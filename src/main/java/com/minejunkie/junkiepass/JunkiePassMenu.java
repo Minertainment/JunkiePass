@@ -11,7 +11,7 @@ public class JunkiePassMenu extends StaticMenu {
     private JunkiePass plugin;
 
     public JunkiePassMenu(JunkiePass plugin) {
-        super(plugin, 27, ChatColor.GOLD + ChatColor.BOLD.toString() + "Junkie Pass");
+        super(plugin, 36, ChatColor.GOLD + ChatColor.BOLD.toString() + "Junkie Pass");
         this.plugin = plugin;
 
         addItem(
@@ -36,7 +36,7 @@ public class JunkiePassMenu extends StaticMenu {
 
         addItem(
                 new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(14).buildMeta().withDisplayName(ChatColor.RED + ChatColor.ITALIC.toString() + "Exit").item().build(),
-                22,
+                31,
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();

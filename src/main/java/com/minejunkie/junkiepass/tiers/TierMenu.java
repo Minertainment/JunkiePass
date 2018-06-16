@@ -3,17 +3,26 @@ package com.minejunkie.junkiepass.tiers;
 import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
 import com.minertainment.athena.menu.PlayerMenu;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.inventivetalent.itembuilder.ItemBuilder;
 
+import java.util.ArrayList;
+
 public class TierMenu extends PlayerMenu {
 
     private JunkiePass plugin;
-    private ItemStack backToJunkiePassMenu, exit, fill, nextPage, previousPage;
+
+    private ItemStack fill = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(15).buildMeta().withDisplayName(org.bukkit.ChatColor.BLACK + "").item().build();
+    private ItemStack nextPage = new ItemBuilder(Material.PAPER).buildMeta().withDisplayName(ChatColor.GREEN + ChatColor.ITALIC.toString() + "Next Page").item().build();
+    private ItemStack previousPage = new ItemBuilder(Material.PAPER).buildMeta().withDisplayName(ChatColor.GREEN + ChatColor.ITALIC.toString() + "Previous Page").item().build();
+    private ItemStack unlockedItem = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(13).buildMeta().withDisplayName(ChatColor.GREEN + "Unlocked").item().build();
+    private ItemStack lockedItem = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(14).buildMeta().withDisplayName(ChatColor.RED + "Locked").item().build();
+
+    private ItemBuilder currentItem = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(4);
     private ItemBuilder hasRewardItem = new ItemBuilder(Material.STORAGE_MINECART);
     private ItemBuilder noRewardItem = new ItemBuilder(Material.MINECART);
 
@@ -21,11 +30,8 @@ public class TierMenu extends PlayerMenu {
         super(plugin, 54, ChatColor.AQUA + ChatColor.BOLD.toString() + "Tiers Menu");
         this.plugin = plugin;
 
-        backToJunkiePassMenu = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(4).buildMeta().withDisplayName(org.bukkit.ChatColor.YELLOW + org.bukkit.ChatColor.ITALIC.toString() + "Back to Junkie Pass").item().build();
-        exit = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(14).buildMeta().withDisplayName(org.bukkit.ChatColor.RED + org.bukkit.ChatColor.ITALIC.toString() + "Exit").item().build();
-        fill = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(15).buildMeta().withDisplayName(org.bukkit.ChatColor.BLACK + "").item().build();
-        nextPage = new ItemBuilder(Material.PAPER).buildMeta().withDisplayName(ChatColor.GREEN + ChatColor.ITALIC.toString() + "Next Page").item().build();
-        previousPage = new ItemBuilder(Material.PAPER).buildMeta().withDisplayName(ChatColor.GREEN + ChatColor.ITALIC.toString() + "Previous Page").item().build();
+        ItemStack backToJunkiePassMenu = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(4).buildMeta().withDisplayName(org.bukkit.ChatColor.YELLOW + org.bukkit.ChatColor.ITALIC.toString() + "Back to Junkie Pass").item().build();
+        ItemStack exit = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(14).buildMeta().withDisplayName(org.bukkit.ChatColor.RED + org.bukkit.ChatColor.ITALIC.toString() + "Exit").item().build();
 
         addItem(
                 backToJunkiePassMenu,
@@ -84,23 +90,34 @@ public class TierMenu extends PlayerMenu {
             });
         }
 
-        int freeStart = 9, paidStart = 27;
+        int freeStart = 9, indicatorStart = 18, paidStart = 27;
         Tier[] tiers = TierConfig.getTiers();
         for (int i = (9 * (page - 1)) + 1; i <= (9 * page); i++) {
-            inventory.setItem(freeStart++, getFreeRewardItem(tiers[i - 1]));
-            inventory.setItem(paidStart++, getPaidRewardItem(tiers[i - 1]));
+            inventory.setItem(freeStart++, i <= 50 ? getFreeRewardItem(tiers[i - 1]) : fill);
+            inventory.setItem(indicatorStart++, i <= 50 ? getTierStatusItem(profile, tiers[i - 1].getTierLevel()) : fill);
+            inventory.setItem(paidStart++, i <= 50 ? getPaidRewardItem(tiers[i - 1]) : fill);
         }
+    }
+
+    public ItemStack getTierStatusItem(JunkiePassProfile profile, int tierLevel) {
+        if (profile.getJunkiePassTier() >= tierLevel) return unlockedItem;
+        if (profile.getJunkiePassTier() + 1 >= tierLevel) return currentItem.buildMeta().withDisplayName(ChatColor.GRAY + String.valueOf((int) profile.getJunkiePassExperience() % 10) + ChatColor.GOLD + "/" + ChatColor.GRAY + "10" + ChatColor.GOLD + " ✪").item().build();
+        else return lockedItem;
     }
 
     public ItemStack getFreeRewardItem(Tier tier) {
         if (tier.hasFreeRewards()) {
-            return hasRewardItem.buildMeta().withDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Tier " + tier.getTierLevel()).item().build();
+            ArrayList<String> newLore = new ArrayList<>();
+            tier.getFreeRewards().forEach(s -> newLore.add(ChatColor.GRAY + "- " + ChatColor.GOLD + s));
+            return hasRewardItem.buildMeta().withDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Tier " + tier.getTierLevel()).withLore(newLore).item().build();
         } else return noRewardItem.buildMeta().withDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Tier " + tier.getTierLevel()).item().build();
     }
 
     public ItemStack getPaidRewardItem(Tier tier) {
         if (tier.hasPaidRewards()) {
-            return hasRewardItem.buildMeta().withDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Tier " + tier.getTierLevel()).item().build();
+            ArrayList<String> newLore = new ArrayList<>();
+            tier.getPaidRewards().forEach(s -> newLore.add(ChatColor.GRAY + "- " + ChatColor.GOLD + s));
+            return hasRewardItem.buildMeta().withDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Tier " + tier.getTierLevel()).withLore(newLore).item().build();
         } else return noRewardItem.buildMeta().withDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + "Tier " + tier.getTierLevel()).item().build();
     }
 }
