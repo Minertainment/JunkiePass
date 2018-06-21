@@ -39,7 +39,7 @@ public class GiveChallengeCommand extends AthenaBukkitCommand {
                 if (sender instanceof Player) {
                     Player player = (Player) sender;
                     JunkiePassProfile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
-                    profile.getChallenges().clear();
+                    profile.getDailyChallenges().clear();
                 }
                 return;
             }

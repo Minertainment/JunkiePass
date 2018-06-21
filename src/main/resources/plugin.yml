@@ -1,5 +1,5 @@
 name: JunkiePass
 authors: [Orgys, Risks]
 version: 1.0-SNAPSHOT
-depend: [Athena, PrisonMines, JShards]
+depend: [Athena, PrisonMines, JShards, TokenEnchant]
 main: com.minejunkie.junkiepass.JunkiePass

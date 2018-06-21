@@ -54,7 +54,7 @@ public class DailyChallengeMenu extends PlayerMenu {
 
         addUpdater((player, inventory) -> {
             JunkiePassProfile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
-            if (profile.getChallenges().isEmpty()) {
+            if (profile.getDailyChallenges().isEmpty()) {
                 Duration duration = Duration.between(LocalTime.now(), midnight);
                 String remaining = DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm:ss");
                 inventory.setItem(13, noChallenges.withLore(Arrays.asList(ChatColor.GRAY + ChatColor.ITALIC.toString() + "Next available:", ChatColor.GOLD + remaining)).item().build());
@@ -71,15 +71,14 @@ public class DailyChallengeMenu extends PlayerMenu {
     }
 
     private void update(JunkiePassProfile profile, Inventory inventory) {
-        // TODO make it "Daily Challenges" instead of challenges
-        if (!profile.getChallenges().isEmpty()) {
-            int[] slots = new int[] { profile.getChallenges().size() == 1 ? 13 : 11, 15};
+        if (!profile.getDailyChallenges().isEmpty()) {
+            int[] slots = new int[] { profile.getDailyChallenges().size() == 1 ? 13 : 11, 15};
             int counter = 0;
-            for (Class clazz : profile.getChallenges().keySet()) {
+            for (Class clazz : profile.getDailyChallenges().keySet()) {
                 Challenge challenge = plugin.getChallengeManager().getAllChallengesMap().get(clazz);
-                ChallengeData data = profile.getChallenges().get(clazz);
+                ChallengeData data = profile.getDailyChallenges().get(clazz);
                 inventory.setItem(slots[counter],
-                        challengeItem.withDurability(data.getAmount() == 0 ? 14 : 4)
+                        challengeItem.withDurability(data.getAmount() == 0 ? 1 : 4)
                                 .buildMeta().withDisplayName(ChatColor.GOLD + challenge.getName())
                                 .withLore(Arrays.asList(
                                         ChatColor.GRAY + String.valueOf((int) challenge.getExperience()) + ChatColor.GOLD + " ✪",

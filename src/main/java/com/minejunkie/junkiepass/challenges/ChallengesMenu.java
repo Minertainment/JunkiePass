@@ -26,12 +26,12 @@ public class ChallengesMenu extends StaticMenu {
         );
 
         addItem(
-                new ItemBuilder(Material.PAPER).buildMeta().withDisplayName(ChatColor.GOLD + "Weekly Challenges").item().build(),
+                new ItemBuilder(Material.PAPER).buildMeta().withDisplayName(ChatColor.GOLD + "Premium Challenges").item().build(),
                 15,
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();
-                    plugin.getDailyChallengeMenu().open(player);
+                    plugin.getPaidChallengeMenu().open(player);
                 }
         );
 

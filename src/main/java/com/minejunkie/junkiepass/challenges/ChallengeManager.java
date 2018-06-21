@@ -8,25 +8,25 @@ import java.util.*;
 public class ChallengeManager {
 
     private JunkiePass plugin;
-    private ArrayList<Challenge> dailyChallenges, weeklyChallenges;
+    private ArrayList<Challenge> dailyChallenges, paidChallenges;
     private HashMap<Class, Challenge> allChallenges = new HashMap<>();
 
     public ChallengeManager(JunkiePass plugin) {
         this.plugin = plugin;
         dailyChallenges = new ArrayList<>();
-        weeklyChallenges = new ArrayList<>();
+        paidChallenges = new ArrayList<>();
     }
 
     public void registerChallenge(ChallengeType type, Challenge challenge) {
         if (type == ChallengeType.DAILY) dailyChallenges.add(challenge);
-        if (type == ChallengeType.WEEKLY) weeklyChallenges.add(challenge);
+        if (type == ChallengeType.PAID) paidChallenges.add(challenge);
         allChallenges.put(challenge.getClass(), challenge);
     }
 
     public void registerChallenges(Challenge... challenges) {
         for (Challenge challenge : challenges) {
             if (challenge.getType() == ChallengeType.DAILY) dailyChallenges.add(challenge);
-            else if (challenge.getType() == ChallengeType.WEEKLY) weeklyChallenges.add(challenge);
+            else if (challenge.getType() == ChallengeType.PAID) paidChallenges.add(challenge);
             allChallenges.put(challenge.getClass(), challenge);
         }
 
@@ -37,7 +37,7 @@ public class ChallengeManager {
     public String getChallengesString(ChallengeType type) {
         ArrayList<Challenge> challenges;
         if (type == ChallengeType.DAILY) challenges = dailyChallenges;
-        else if (type == ChallengeType.WEEKLY) challenges = weeklyChallenges;
+        else if (type == ChallengeType.PAID) challenges = paidChallenges;
         else challenges = new ArrayList<>(allChallenges.values());
 
 
@@ -54,7 +54,7 @@ public class ChallengeManager {
     public Challenge containsChallenge(ChallengeType type, String challengeName) {
         ArrayList<Challenge> challenges;
         if (type == ChallengeType.DAILY) challenges = dailyChallenges;
-        else if (type == ChallengeType.WEEKLY) challenges = weeklyChallenges;
+        else if (type == ChallengeType.PAID) challenges = paidChallenges;
         else challenges = new ArrayList<>(allChallenges.values());
 
         for (Challenge challenge : challenges) {
@@ -67,7 +67,7 @@ public class ChallengeManager {
     public Challenge getRandom(ChallengeType type) {
         ArrayList<Challenge> challenges;
         if (type == ChallengeType.DAILY) challenges = dailyChallenges;
-        else if (type == ChallengeType.WEEKLY) challenges = weeklyChallenges;
+        else if (type == ChallengeType.PAID) challenges = paidChallenges;
         else challenges = new ArrayList<>(allChallenges.values());
 
         Random random = plugin.getRandom();
@@ -76,20 +76,20 @@ public class ChallengeManager {
     }
 
     public boolean addChallenge(JunkiePassProfile profile, Class clazz) {
-        if (profile.getChallenges().size() >= 2 || (!profile.getChallenges().isEmpty() && profile.getChallenges().containsKey(clazz))) return false;
-        profile.getChallenges().put(clazz, new ChallengeData());
+        if (profile.getDailyChallenges().size() >= 2 || (!profile.getDailyChallenges().isEmpty() && profile.getDailyChallenges().containsKey(clazz))) return false;
+        profile.getDailyChallenges().put(clazz, new ChallengeData());
         return true;
     }
 
     public Challenge addRandomDailyChallenge(JunkiePassProfile profile) {
-        if (profile.getChallenges().size() >= 2) return null;
+        if (profile.getDailyChallenges().size() >= 2) return null;
 
         Challenge challenge = null;
-        while (challenge == null || profile.getChallenges().containsKey(challenge.getClass())) {
+        while (challenge == null || profile.getDailyChallenges().containsKey(challenge.getClass())) {
             challenge = getRandom(ChallengeType.DAILY);
         }
 
-        profile.getChallenges().put(challenge.getClass(), new ChallengeData());
+        profile.addDailyChallenge(challenge.getClass());
         return challenge;
     }
 
@@ -97,8 +97,8 @@ public class ChallengeManager {
         return dailyChallenges;
     }
 
-    public ArrayList<Challenge> getWeeklyChallenges() {
-        return weeklyChallenges;
+    public ArrayList<Challenge> getPaidChallenges() {
+        return paidChallenges;
     }
 
     public HashMap<Class, Challenge> getAllChallengesMap() {

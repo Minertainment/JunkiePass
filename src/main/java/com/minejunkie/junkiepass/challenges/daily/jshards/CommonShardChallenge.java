@@ -24,9 +24,9 @@ public class CommonShardChallenge extends Challenge {
     @EventHandler
     public void onCommonRoll(ShardRollEvent event) {
         JunkiePassProfile profile = getProfile(event.getUUID());
-        if (profile.getChallenges().containsKey(this.getClass())) {
+        if (profile.getDailyChallenges().containsKey(this.getClass())) {
             if (event.getShard().getShardType() == ShardType.COMMON) {
-                ChallengeData data = profile.getChallenges().get(this.getClass());
+                ChallengeData data = profile.getDailyChallenges().get(this.getClass());
                 increment(profile, Bukkit.getPlayer(event.getUUID()), data, 1);
             }
         }

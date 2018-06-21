@@ -8,9 +8,8 @@ import java.util.UUID;
 
 public class JunkiePassProfile extends Profile {
 
-    // TODO weeklyChallenges
-
-    private HashMap<Class, ChallengeData> challenges = new HashMap<>();
+    private HashMap<Class, ChallengeData> dailyChallenges = new HashMap<>();
+    private HashMap<Class, ChallengeData> paidChallenges = new HashMap<>();
     private double junkiePassExperience = 10;
     private int junkiePassTier = 1;
     private boolean isPaid;
@@ -19,16 +18,28 @@ public class JunkiePassProfile extends Profile {
         super(uuid);
     }
 
-    public HashMap<Class, ChallengeData> getChallenges() {
-        return challenges;
+    public HashMap<Class, ChallengeData> getDailyChallenges() {
+        return dailyChallenges;
     }
 
-    public void removeChallenge(Class challenge) {
-        challenges.remove(challenge);
+    public void removeDailyChallenge(Class challenge) {
+        dailyChallenges.remove(challenge);
     }
 
-    public void addChallenge(Class challenge) {
-        challenges.put(challenge, new ChallengeData(0));
+    public void addDailyChallenge(Class challenge) {
+        dailyChallenges.put(challenge, new ChallengeData(0));
+    }
+
+    public HashMap<Class, ChallengeData> getPaidChallenges() {
+        return paidChallenges;
+    }
+
+    public void removePaidChallenge(Class challenge) {
+        paidChallenges.remove(challenge);
+    }
+
+    public void addPaidChallenge(Class challenge) {
+        paidChallenges.put(challenge, new ChallengeData(0));
     }
 
     public double getJunkiePassExperience() {

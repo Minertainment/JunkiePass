@@ -62,7 +62,7 @@ public abstract class Challenge implements Listener {
 
     public void onComplete(JunkiePassProfile profile, Player player) {
         profile.addJunkiePassExperience(experience);
-        profile.removeChallenge(this.getClass());
+        profile.removeDailyChallenge(this.getClass());
         player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have completed the " + ChatColor.GOLD + ChatColor.BOLD.toString() + name + "! " + ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + experience + " XP" + ChatColor.DARK_GRAY + "]");
 
         int oldTier = profile.getJunkiePassTier();
