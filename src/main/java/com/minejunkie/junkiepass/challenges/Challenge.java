@@ -17,23 +17,41 @@ public abstract class Challenge implements Listener {
     private transient JunkiePass plugin;
     private ChallengeType type;
     private String name;
+    private String description;
     private double amount;
     private double experience;
     private TreeSet<Double> milestones;
+    private Format format;
 
-    public Challenge(JunkiePass plugin, ChallengeType type, String name, double amount, double experience) {
-        this(plugin, type, name, amount, experience, new TreeSet<>());
+    public Challenge(JunkiePass plugin, ChallengeType type, String name, String description, double amount, double experience) {
+        this(plugin, type, name, description, amount, experience, new TreeSet<>(), Format.WHOLE);
     }
 
-    public Challenge(JunkiePass plugin, ChallengeType type, String name, double amount, double experience, TreeSet<Double> milestones) {
+    public Challenge(JunkiePass plugin, ChallengeType type, String name, String description, double amount, double experience, Format format) {
+        this(plugin, type, name, description, amount, experience, new TreeSet<>(), format);
+    }
+
+    public Challenge(JunkiePass plugin, ChallengeType type, String name, String description, double amount, double experience, TreeSet<Double> milestones, Format format) {
         this.plugin = plugin;
         this.type = type;
         this.name = name;
+        this.description = description;
         this.amount = amount;
         this.experience = experience;
         this.milestones = milestones;
+        this.format = format;
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public ChallengeData getChallengeData(JunkiePassProfile profile) {
+        ChallengeData data = null;
+        if (getType() == ChallengeType.DAILY) {
+            if (profile.getDailyChallenges().containsKey(this.getClass())) data = profile.getDailyChallenges().get(this.getClass());
+        } else {
+            if (profile.getPaidChallenges().containsKey(this.getClass())) data = profile.getPaidChallenges().get(this.getClass());
+        }
+        return data;
     }
 
     public void increment(JunkiePassProfile profile, Player player, ChallengeData data, double amount) {
@@ -56,43 +74,31 @@ public abstract class Challenge implements Listener {
     // Can be overridden if the double needs to be more precise.
     public void onMilestone(Player player, ChallengeData data) {
         player.sendMessage(
-                String.format(getPlugin().getPrefix() + ChatColor.GOLD + ChatColor.BOLD.toString() + name + ": " + ChatColor.GREEN + "Milestone Achieved " + ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "%d" + ChatColor.DARK_GRAY + "/" + ChatColor.GOLD + "%d" + ChatColor.DARK_GRAY + "]", (int) Math.round(data.getAmount()), (int) Math.round(getAmount()))
+                String.format(getPlugin().getPrefix() + ChatColor.GOLD + ChatColor.BOLD.toString() + name + ": " + ChatColor.GREEN + "Milestone Achieved " + ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "%s" + ChatColor.DARK_GRAY + "/" + ChatColor.GOLD + "%s" + ChatColor.DARK_GRAY + "]", String.valueOf((int) Math.round(data.getAmount())), getAmountString())
         );
     }
 
     public void onComplete(JunkiePassProfile profile, Player player) {
         profile.addJunkiePassExperience(experience);
-        profile.removeDailyChallenge(this.getClass());
+        if (type == ChallengeType.DAILY) profile.removeDailyChallenge(this.getClass());
+        else profile.getPaidChallenges().get(this.getClass()).setComplete(true);
         player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have completed the " + ChatColor.GOLD + ChatColor.BOLD.toString() + name + "! " + ChatColor.DARK_GRAY + "[" + ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + experience + " XP" + ChatColor.DARK_GRAY + "]");
 
         int oldTier = profile.getJunkiePassTier();
-        profile.updateJunkiePassTier();
+        if (oldTier < 50) profile.updateJunkiePassTier();
+        else return;
 
-        // If it has changed...
         if (oldTier != profile.getJunkiePassTier()) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have reached" + ChatColor.GOLD + ChatColor.BOLD.toString() + " Tier " + profile.getJunkiePassTier() + ".");
-            Tier tier = TierConfig.getTiers()[profile.getJunkiePassTier() - 1];
+            int newTier = profile.getJunkiePassTier();
 
-            // TODO Add event for when their experience is changed.
-            // TODO Add a way to claim rewards if their inventory is full.
-            boolean gifted = false;
-            if (tier.hasFreeRewards() && !tier.getFreeRewards().isEmpty()) {
-                for (String s : tier.getFreeRewards()) {
-                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), s.replaceAll("@p", player.getName()));
-                }
-                gifted = true;
+            boolean hasUnclaimed = false;
+            for (int i = (oldTier + 1); i <= newTier; i++) {
+                player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have reached" + ChatColor.GOLD + ChatColor.BOLD.toString() + " Tier " + i + ".");
+                Tier tier = TierConfig.getTiers()[i-1];
+                if (tier.hasFreeRewards() || (tier.hasPaidRewards() && profile.isPaid())) hasUnclaimed = true;
             }
 
-            if (profile.isPaid() || player.hasPermission("minejunkie.junkiepass")) {
-                if (tier.hasPaidRewards() && !tier.getPaidRewards().isEmpty()) {
-                    for (String s : tier.getPaidRewards()) {
-                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), s.replaceAll("@p", player.getName()));
-                    }
-                    gifted = true;
-                }
-            }
-
-            if (gifted) player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "Your rewards have been gifted.");
+            if (hasUnclaimed) player.sendMessage(plugin.getPrefix() + ChatColor.GRAY + ChatColor.ITALIC.toString() + "You have unclaimed rewards. Claim them with " + ChatColor.GOLD + "/jp claim" + ChatColor.GRAY + ".");
         }
     }
 
@@ -108,8 +114,20 @@ public abstract class Challenge implements Listener {
         return name;
     }
 
-    public double getAmount() {
+    public String getDescription() {
+        return description;
+    }
+
+    public Number getAmount() {
+        if (format == Format.WHOLE) return ((int) amount);
+        if (format == Format.DECIMAL) return amount;
         return amount;
+    }
+
+    public String getAmountString() {
+        if (format == Format.WHOLE) return String.valueOf(getAmount());
+        if (format == Format.DECIMAL) return String.format("%.2f", amount);
+        return String.valueOf(amount);
     }
 
     public double getExperience() {
@@ -122,5 +140,14 @@ public abstract class Challenge implements Listener {
 
     public JunkiePassProfile getProfile(UUID uuid) {
         return getPlugin().getProfileManager().getProfile(uuid);
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+    public enum Format {
+        WHOLE,
+        DECIMAL
     }
 }

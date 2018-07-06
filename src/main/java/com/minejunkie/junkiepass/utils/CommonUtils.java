@@ -2,6 +2,9 @@ package com.minejunkie.junkiepass.utils;
 
 import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.TreeSet;
 
@@ -30,4 +33,20 @@ public class CommonUtils {
         return true;
     }
 
+    public boolean redeemJunkiePass(JunkiePassProfile profile, int level) {
+        if (profile.isPaid()) return false;
+        profile.setPaid(true);
+        profile.setJunkiePassTier(level);
+        profile.setJunkiePassExperience(level * 10);
+        plugin.getChallengeManager().getPaidChallenges().forEach((challenge -> profile.addPaidChallenge(challenge.getClass())));
+        return true;
+    }
+
+    public int getOpenInventorySlots(Player player) {
+        int count = 0;
+        for (ItemStack itemStack : player.getInventory().getStorageContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) count++;
+        }
+        return count;
+    }
 }

@@ -79,10 +79,10 @@ public class DailyChallengeMenu extends PlayerMenu {
                 ChallengeData data = profile.getDailyChallenges().get(clazz);
                 inventory.setItem(slots[counter],
                         challengeItem.withDurability(data.getAmount() == 0 ? 1 : 4)
-                                .buildMeta().withDisplayName(ChatColor.GOLD + challenge.getName())
+                                .buildMeta().withDisplayName(ChatColor.GOLD + challenge.getName() + ChatColor.DARK_GRAY + " [" + ChatColor.GRAY + String.valueOf((int) challenge.getExperience()) + ChatColor.GOLD + " ✪" + ChatColor.DARK_GRAY + "]")
                                 .withLore(Arrays.asList(
-                                        ChatColor.GRAY + String.valueOf((int) challenge.getExperience()) + ChatColor.GOLD + " ✪",
-                                        ChatColor.GRAY + String.valueOf((int) data.getAmount()) + ChatColor.GOLD + "/" + ChatColor.GRAY + String.valueOf((int) challenge.getAmount()))
+                                        ChatColor.GRAY + challenge.getDescription(),
+                                        ChatColor.GOLD + (data == null ? "0" : String.valueOf(challenge.getFormat() == Challenge.Format.WHOLE ? (int) data.getAmount() : data.getAmount())) + ChatColor.GRAY + "/" + ChatColor.GOLD + challenge.getAmountString())
                                 ).item().build()
                 );
                 counter++;

@@ -13,7 +13,7 @@ import org.bukkit.event.EventHandler;
 public class UncommonShardChallenge extends Challenge {
 
     public UncommonShardChallenge(JunkiePass plugin) {
-        super(plugin, ChallengeType.DAILY, "Uncommon Shard Challenge", 1, 5);
+        super(plugin, ChallengeType.DAILY, "Uncommon Shard Challenge", "Roll 1 Uncommon Shard.", 1, 5, Format.WHOLE);
     }
 
     @EventHandler

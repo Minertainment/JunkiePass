@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -20,8 +21,8 @@ public class SpecificMineChallenge extends Challenge {
 
     private String mine;
 
-    public SpecificMineChallenge(JunkiePass plugin, String mine, String name, double amount, TreeSet<Double> milestones) {
-        super(plugin, ChallengeType.PAID, name, amount, 10, milestones);
+    public SpecificMineChallenge(JunkiePass plugin, ChallengeType type, String mine, String name, double amount, TreeSet<Double> milestones) {
+        super(plugin, type, name, "Break " + NumberFormat.getIntegerInstance().format(amount) + " blocks at the " + mine + " mine.", amount, type == ChallengeType.DAILY ? 5 : 30, milestones, Format.WHOLE);
         this.mine = mine;
     }
 
@@ -31,11 +32,14 @@ public class SpecificMineChallenge extends Challenge {
         if (!PrisonMines.getAPI().getByLocation(event.getBlock().getLocation()).getName().equalsIgnoreCase(mine)) return;
 
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (profile.getPaidChallenges().containsKey(this.getClass())) {
-            ChallengeData data = profile.getPaidChallenges().get(this.getClass());
-            increment(profile, event.getPlayer(), data,1);
-        }
+        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
+
+        ChallengeData data;
+        if ((data = getChallengeData(profile)) == null) return;
+        if (!data.isComplete()) increment(profile, event.getPlayer(), data,1);
+
     }
+
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void onBlockExplode(TEBlockExplodeEvent event) {
@@ -44,11 +48,13 @@ public class SpecificMineChallenge extends Challenge {
         if (!PrisonMines.getAPI().getByLocation(event.blockList().get(0).getLocation()).getName().equalsIgnoreCase(mine)) return;
 
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (profile.getPaidChallenges().containsKey(this.getClass())) {
-            ChallengeData data = profile.getPaidChallenges().get(this.getClass());
-            increment(profile, event.getPlayer(), data, countNotAir(event.blockList()) - 1);
-        }
+        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
+
+        ChallengeData data;
+        if ((data = getChallengeData(profile)) == null) return;
+        if (!data.isComplete()) increment(profile, event.getPlayer(), data, countNotAir(event.blockList()) - 1);
     }
+
 
     public int countNotAir(List<Block> blocks) {
         int counter = 0;

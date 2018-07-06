@@ -10,8 +10,10 @@ public class JunkiePassProfile extends Profile {
 
     private HashMap<Class, ChallengeData> dailyChallenges = new HashMap<>();
     private HashMap<Class, ChallengeData> paidChallenges = new HashMap<>();
-    private double junkiePassExperience = 10;
-    private int junkiePassTier = 1;
+    private double junkiePassExperience = 0;
+    private int junkiePassTier = 0;
+    private int claimedTier = 0;
+    private long lastDaily = 0;
     private boolean isPaid;
 
     public JunkiePassProfile(UUID uuid) {
@@ -55,8 +57,16 @@ public class JunkiePassProfile extends Profile {
     }
 
     public void updateJunkiePassTier() {
-        junkiePassTier = (int) junkiePassExperience / 10;
+        int newTier = (int) junkiePassExperience / 10;
+        junkiePassTier = newTier < 50 ? newTier : 50;
     }
+
+    public int addJunkiePassTier(int amount) {
+        int newTier = junkiePassTier + amount;
+        junkiePassTier = newTier < 50 ? newTier : 50;
+        return junkiePassTier;
+    }
+
 
     public int getJunkiePassTier() {
         return junkiePassTier;
@@ -64,6 +74,22 @@ public class JunkiePassProfile extends Profile {
 
     public void setJunkiePassTier(int junkiePassTier) {
         this.junkiePassTier = junkiePassTier;
+    }
+
+    public int getClaimedTier() {
+        return claimedTier;
+    }
+
+    public void setClaimedTier(int claimedTier) {
+        this.claimedTier = claimedTier;
+    }
+
+    public long getLastDaily() {
+        return lastDaily;
+    }
+
+    public void setLastDaily(long lastDaily) {
+        this.lastDaily = lastDaily;
     }
 
     public boolean isPaid() {

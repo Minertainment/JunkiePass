@@ -18,7 +18,7 @@ public class CommonShardChallenge extends Challenge {
     // Roll 2 Common Shards
 
     public CommonShardChallenge(JunkiePass plugin) {
-        super(plugin, ChallengeType.DAILY, "Common Shard Challenge", 2, 5, new TreeSet<>(Collections.singletonList(1.00)));
+        super(plugin, ChallengeType.DAILY, "Common Shard Challenge", "Roll 2 Common Shards.", 2, 5, new TreeSet<>(Collections.singletonList(1.00)), Format.WHOLE);
     }
 
     @EventHandler

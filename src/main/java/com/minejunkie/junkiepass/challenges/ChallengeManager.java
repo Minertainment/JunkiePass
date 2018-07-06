@@ -3,7 +3,9 @@ package com.minejunkie.junkiepass.challenges;
 import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class ChallengeManager {
 

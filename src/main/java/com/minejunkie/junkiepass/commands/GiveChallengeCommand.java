@@ -34,16 +34,6 @@ public class GiveChallengeCommand extends AthenaBukkitCommand {
         }
 
         if (args.argsLength() == 1) {
-            // TODO Remove (for testing)
-            if (args.getString(0).equalsIgnoreCase("reset")) {
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-                    JunkiePassProfile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
-                    profile.getDailyChallenges().clear();
-                }
-                return;
-            }
-
             Player player;
             if ((player = Bukkit.getPlayer(args.getString(0))) == null) throw new CommandException(ChatColor.RED + "Player not found.");
 

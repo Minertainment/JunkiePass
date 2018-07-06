@@ -1,5 +1,6 @@
 name: JunkiePass
 authors: [Orgys, Risks]
 version: 1.0-SNAPSHOT
-depend: [Athena, PrisonMines, JShards, TokenEnchant]
+depend: [JCore, Athena, PrisonMines, JShards, TokenEnchant, Votifier, EZRanksPro, EZPrestige]
+softdepend: [DeliveryManX]
 main: com.minejunkie.junkiepass.JunkiePass

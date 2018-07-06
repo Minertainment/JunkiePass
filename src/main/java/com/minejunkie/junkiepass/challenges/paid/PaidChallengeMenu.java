@@ -24,7 +24,7 @@ public class PaidChallengeMenu extends PlayerMenu {
     private ItemBuilder challengeIndicator = new ItemBuilder(Material.STAINED_GLASS_PANE);
 
     public PaidChallengeMenu(JunkiePass plugin) {
-        super(plugin, 36, ChatColor.GOLD + "Premium Challenges");
+        super(plugin, 54, ChatColor.GOLD + "Premium Challenges");
         this.plugin = plugin;
 
         ItemStack backToJunkiePassMenu = new ItemBuilder(Material.STAINED_GLASS_PANE).withDurability(4).buildMeta().withDisplayName(org.bukkit.ChatColor.YELLOW + org.bukkit.ChatColor.ITALIC.toString() + "Back to Junkie Pass").item().build();
@@ -32,7 +32,7 @@ public class PaidChallengeMenu extends PlayerMenu {
 
         addItem(
                 backToJunkiePassMenu,
-                27,
+                45,
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();
@@ -42,7 +42,7 @@ public class PaidChallengeMenu extends PlayerMenu {
 
         addItem(
                 exit,
-                31,
+                49,
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();
@@ -61,11 +61,11 @@ public class PaidChallengeMenu extends PlayerMenu {
     public void update(JunkiePassProfile profile, Inventory inventory, int page) {
         Player player = profile.getPlayer();
         getPersonalUpdates(player).clear();
-        inventory.setItem(29, null);
-        inventory.setItem(33, null);
+        inventory.setItem(47, null);
+        inventory.setItem(51, null);
 
         if (!profile.isPaid()) {
-            inventory.setItem(13, new ItemBuilder(Material.STAINED_GLASS_PANE)
+            inventory.setItem(22, new ItemBuilder(Material.STAINED_GLASS_PANE)
                     .withDurability(14).buildMeta()
                     .withDisplayName(ChatColor.RED + "No access!")
                     .withLore(Arrays.asList(ChatColor.GRAY + "Purchase a Junkie Pass @", ChatColor.GOLD + "store.minejunkie.com"))
@@ -81,33 +81,34 @@ public class PaidChallengeMenu extends PlayerMenu {
             ItemStack previous;
             previous = previousPage.clone();
             previous.setAmount(page - 1);
-            inventory.setItem(29, previous);
+            inventory.setItem(47, previous);
             getPersonalUpdates(player).add(e -> {
-                if (e.getSlot() == 29) {
+                if (e.getSlot() == 47) {
                     update(profile, inventory, page - 1);
                 }
             });
         }
 
-        if (page < Math.ceil(challenges / 5D)) {
+        if (page < Math.ceil(challenges / 8D)) {
             ItemStack next;
             next = nextPage.clone();
             next.setAmount(page + 1);
-            inventory.setItem(33, next);
+            inventory.setItem(51, next);
             getPersonalUpdates(player).add(e -> {
-                if (e.getSlot() == 33) {
+                if (e.getSlot() == 51) {
                     update(profile, inventory, page + 1);
                 }
             });
         }
 
-        int challengesLeft = challenges - ((page - 1) * 5);
+        int challengesLeft = challenges - ((page - 1) * 8);
 
-        int start = 9;
-        for (int i = 0; i < 5; i++) {
+        int start = 10;
+        for (int i = 0; i < 8; i++) {
             if (challengesLeft == 0) {
                 inventory.setItem(start, fill);
-                start += 2;
+                if (i != 3) start += 2;
+                else start += 12;
                 continue;
             }
 
@@ -128,16 +129,17 @@ public class PaidChallengeMenu extends PlayerMenu {
             inventory.setItem(
                     start,
                     challengeIndicator.withDurability(durability)
-                            .buildMeta().withDisplayName(ChatColor.GOLD + challenge.getName())
+                            .buildMeta().withDisplayName(ChatColor.GOLD + challenge.getName() + ChatColor.DARK_GRAY + " [" + ChatColor.GRAY + String.valueOf((int) challenge.getExperience()) + ChatColor.GOLD + " ✪" + ChatColor.DARK_GRAY + "]")
                             .withLore(Arrays.asList(
-                                        ChatColor.GRAY + String.valueOf((int) challenge.getExperience()) + ChatColor.GOLD + " ✪",
-                                        ChatColor.GOLD + (data == null ? "0" : String.valueOf(data.getAmount())) + ChatColor.GRAY + "/" + ChatColor.GOLD + challenge.getAmount()
+                                        ChatColor.GRAY + challenge.getDescription(),
+                                        ChatColor.GOLD + (data == null ? "0" : String.valueOf((int) data.getAmount())) + ChatColor.GRAY + "/" + ChatColor.GOLD + challenge.getAmountString()
                                     )
                             ).item().build()
             );
 
             challengesLeft--;
-            start += 2;
+            if (i != 3) start += 2;
+            else start += 12;
             fill(fill);
         }
     }

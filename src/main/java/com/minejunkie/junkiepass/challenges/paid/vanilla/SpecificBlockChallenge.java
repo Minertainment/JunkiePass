@@ -19,8 +19,8 @@ public class SpecificBlockChallenge extends Challenge {
 
     private Material material;
 
-    public SpecificBlockChallenge(JunkiePass plugin, Material material, String name, double amount, TreeSet<Double> milestones) {
-        super(plugin, ChallengeType.PAID, name, amount, 10, milestones);
+    public SpecificBlockChallenge(JunkiePass plugin, ChallengeType type, Material material, String name, String description, double amount, TreeSet<Double> milestones) {
+        super(plugin, type, name, description, amount, type == ChallengeType.DAILY ? 5 : 30, milestones, Format.WHOLE);
         this.material = material;
     }
 
@@ -30,27 +30,30 @@ public class SpecificBlockChallenge extends Challenge {
         if (event.getBlock().getType() != material) return;
 
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (profile.getPaidChallenges().containsKey(this.getClass())) {
-            ChallengeData data = profile.getPaidChallenges().get(this.getClass());
-            increment(profile, event.getPlayer(), data,1);
-        }
+        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
+
+        ChallengeData data;
+        if ((data = getChallengeData(profile)) == null) return;
+        if (!data.isComplete()) increment(profile, event.getPlayer(), data, 1);
     }
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void onBlockExplode(TEBlockExplodeEvent event) {
         if (event.blockList().isEmpty()) return;
-
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (profile.getPaidChallenges().containsKey(this.getClass())) {
+        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
 
-            ChallengeData data = profile.getPaidChallenges().get(this.getClass());
-            int counter = 0;
-            for (Block block : event.blockList()) {
-                if (block.getType() == material) counter++;
-            }
+        ChallengeData data;
 
-            if (counter == 0) return;
-            increment(profile, event.getPlayer(), data, counter - 1);
+        if ((data = getChallengeData(profile)) == null) return;
+        if (data.isComplete()) return;
+        int counter = 0;
+
+        for (Block block : event.blockList()) {
+            if (block.getType() == material) counter++;
         }
+
+        if (counter == 0) return;
+        increment(profile, event.getPlayer(), data, counter - 1);
     }
 }
