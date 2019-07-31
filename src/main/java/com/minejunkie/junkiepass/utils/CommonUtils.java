@@ -29,7 +29,6 @@ public class CommonUtils {
     public boolean redeemJunkiePass(JunkiePassProfile profile) {
         if (profile.isPaid()) return false;
         profile.setPaid(true);
-        plugin.getChallengeManager().getPaidChallenges().forEach((challenge -> profile.addPaidChallenge(challenge.getClass())));
         return true;
     }
 
@@ -38,7 +37,6 @@ public class CommonUtils {
         profile.setPaid(true);
         profile.setJunkiePassTier(level);
         profile.setJunkiePassExperience(level * 10);
-        plugin.getChallengeManager().getPaidChallenges().forEach((challenge -> profile.addPaidChallenge(challenge.getClass())));
         return true;
     }
 

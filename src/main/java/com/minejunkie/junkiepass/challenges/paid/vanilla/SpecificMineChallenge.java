@@ -5,6 +5,7 @@ import com.minejunkie.junkiepass.challenges.Challenge;
 import com.minejunkie.junkiepass.challenges.ChallengeData;
 import com.minejunkie.junkiepass.challenges.ChallengeType;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
+import com.minertainment.event.CubedEvent;
 import com.vk2gpz.tokenenchant.event.TEBlockExplodeEvent;
 import net.lightshard.prisonmines.PrisonMines;
 import org.bukkit.Material;
@@ -32,14 +33,11 @@ public class SpecificMineChallenge extends Challenge {
         if (!PrisonMines.getAPI().getByLocation(event.getBlock().getLocation()).getName().equalsIgnoreCase(mine)) return;
 
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
 
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;
         if (!data.isComplete()) increment(profile, event.getPlayer(), data,1);
-
     }
-
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void onBlockExplode(TEBlockExplodeEvent event) {
@@ -48,13 +46,24 @@ public class SpecificMineChallenge extends Challenge {
         if (!PrisonMines.getAPI().getByLocation(event.blockList().get(0).getLocation()).getName().equalsIgnoreCase(mine)) return;
 
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
 
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;
         if (!data.isComplete()) increment(profile, event.getPlayer(), data, countNotAir(event.blockList()) - 1);
     }
 
+    @EventHandler (priority = EventPriority.LOWEST)
+    public void onCubed(CubedEvent event) {
+        if (event.getBlocks().isEmpty()) return;
+        if (PrisonMines.getAPI().getByLocation(event.getBlocks().get(0).getLocation()) == null) return;
+        if (!PrisonMines.getAPI().getByLocation(event.getBlocks().get(0).getLocation()).getName().equalsIgnoreCase(mine)) return;
+
+        JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
+
+        ChallengeData data;
+        if ((data = getChallengeData(profile)) == null) return;
+        if (!data.isComplete()) increment(profile, event.getPlayer(), data, countNotAir(event.getBlocks()) - 1);
+    }
 
     public int countNotAir(List<Block> blocks) {
         int counter = 0;

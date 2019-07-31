@@ -5,6 +5,7 @@ import com.minejunkie.junkiepass.challenges.Challenge;
 import com.minejunkie.junkiepass.challenges.ChallengeData;
 import com.minejunkie.junkiepass.challenges.ChallengeType;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
+import com.minertainment.event.CubedEvent;
 import com.vk2gpz.tokenenchant.event.TEBlockExplodeEvent;
 import net.lightshard.prisonmines.PrisonMines;
 import org.bukkit.Material;
@@ -30,7 +31,6 @@ public class SpecificBlockChallenge extends Challenge {
         if (event.getBlock().getType() != material) return;
 
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
 
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;
@@ -41,7 +41,6 @@ public class SpecificBlockChallenge extends Challenge {
     public void onBlockExplode(TEBlockExplodeEvent event) {
         if (event.blockList().isEmpty()) return;
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (getType() == ChallengeType.PAID && !profile.isPaid()) return;
 
         ChallengeData data;
 
@@ -56,4 +55,24 @@ public class SpecificBlockChallenge extends Challenge {
         if (counter == 0) return;
         increment(profile, event.getPlayer(), data, counter - 1);
     }
+
+    @EventHandler (priority = EventPriority.LOWEST)
+    public void onBlockCubed(CubedEvent event) {
+        if (event.getBlocks().isEmpty()) return;
+        JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
+
+        ChallengeData data;
+
+        if ((data = getChallengeData(profile)) == null) return;
+        if (data.isComplete()) return;
+        int counter = 0;
+
+        for (Block block : event.getBlocks()) {
+            if (block.getType() == material) counter++;
+        }
+
+        if (counter == 0) return;
+        increment(profile, event.getPlayer(), data, counter - 1);
+    }
+
 }

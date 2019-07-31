@@ -17,7 +17,6 @@ public class NukeChallenge extends Challenge {
     @EventHandler
     public void onNuke(NukeEvent event) {
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
-        if (!profile.isPaid()) return;
 
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;

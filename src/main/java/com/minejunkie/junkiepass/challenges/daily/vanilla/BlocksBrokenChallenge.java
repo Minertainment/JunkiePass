@@ -5,6 +5,7 @@ import com.minejunkie.junkiepass.challenges.Challenge;
 import com.minejunkie.junkiepass.challenges.ChallengeData;
 import com.minejunkie.junkiepass.challenges.ChallengeType;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
+import com.minertainment.event.CubedEvent;
 import com.vk2gpz.tokenenchant.event.TEBlockExplodeEvent;
 import net.lightshard.prisonmines.PrisonMines;
 import org.bukkit.event.EventHandler;
@@ -44,6 +45,18 @@ public class BlocksBrokenChallenge extends Challenge {
 
             ChallengeData data = profile.getDailyChallenges().get(this.getClass());
             increment(profile, event.getPlayer(), data, event.blockList().size());
+        }
+    }
+
+    @EventHandler (priority = EventPriority.MONITOR)
+    public void onCubedExplode(CubedEvent event) {
+        if (event.getBlocks().isEmpty()) return;
+
+        JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
+        if (profile.getDailyChallenges().containsKey(this.getClass())) {
+
+            ChallengeData data = profile.getDailyChallenges().get(this.getClass());
+            increment(profile, event.getPlayer(), data, event.getBlocks().size());
         }
     }
 

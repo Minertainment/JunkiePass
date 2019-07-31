@@ -1,7 +1,7 @@
 package com.minejunkie.junkiepass.challenges;
 
 import com.minejunkie.junkiepass.JunkiePass;
-import com.minertainment.athena.menu.StaticMenu;
+import com.minertainment.athena.plugin.bukkit.menu.StaticMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public class ChallengesMenu extends StaticMenu {
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();
-                    plugin.getJunkiePassMenu().open(player);
+                    plugin.getTierMenu().open(player);
                 }
         );
 

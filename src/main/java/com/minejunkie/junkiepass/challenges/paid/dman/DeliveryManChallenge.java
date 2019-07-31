@@ -23,8 +23,6 @@ public class DeliveryManChallenge extends Challenge {
         Player player = event.getPlayer();
         JunkiePassProfile profile = getProfile(player.getUniqueId());
 
-        if (!profile.isPaid()) return;
-
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;
         if (!data.isComplete()) increment(profile, player, data, 1);

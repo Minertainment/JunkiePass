@@ -4,14 +4,12 @@ import com.minejunkie.junkiepass.challenges.ChallengeManager;
 import com.minejunkie.junkiepass.challenges.ChallengeType;
 import com.minejunkie.junkiepass.challenges.ChallengesMenu;
 import com.minejunkie.junkiepass.challenges.daily.DailyChallengeMenu;
-import com.minejunkie.junkiepass.challenges.daily.jshards.CommonShardChallenge;
-import com.minejunkie.junkiepass.challenges.daily.jshards.UncommonShardChallenge;
 import com.minejunkie.junkiepass.challenges.daily.vanilla.BlocksBrokenChallenge;
 import com.minejunkie.junkiepass.challenges.paid.PaidChallengeMenu;
 import com.minejunkie.junkiepass.challenges.paid.dman.DeliveryManChallenge;
 import com.minejunkie.junkiepass.challenges.paid.jenchants.MineBombChallenge;
 import com.minejunkie.junkiepass.challenges.paid.jenchants.NukeChallenge;
-import com.minejunkie.junkiepass.challenges.paid.jshards.ShardRollChallenge;
+import com.minejunkie.junkiepass.challenges.paid.jregrades.RegradeChallenge;
 import com.minejunkie.junkiepass.challenges.paid.prestige.PrestigeChallenge;
 import com.minejunkie.junkiepass.challenges.paid.ranks.EZRanksChallenge;
 import com.minejunkie.junkiepass.challenges.paid.vanilla.*;
@@ -25,12 +23,14 @@ import com.minejunkie.junkiepass.profiles.JunkiePassProfileManager;
 import com.minejunkie.junkiepass.tiers.TierConfig;
 import com.minejunkie.junkiepass.tiers.TierMenu;
 import com.minejunkie.junkiepass.utils.CommonUtils;
-import com.minertainment.obj.ShardType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Collections;
 import java.util.Random;
+import java.util.TreeSet;
 
 public class JunkiePass extends JavaPlugin {
 
@@ -39,7 +39,6 @@ public class JunkiePass extends JavaPlugin {
     private JunkiePassLogger junkiePassLogger;
     private CommonUtils cu;
     private ChallengeManager challengeManager;
-    private JunkiePassMenu junkiePassMenu;
     private ChallengesMenu challengesMenu;
     private DailyChallengeMenu dailyChallengeMenu;
     private PaidChallengeMenu paidChallengeMenu;
@@ -59,9 +58,9 @@ public class JunkiePass extends JavaPlugin {
         getLogger().info("Registering challenges...");
         challengeManager.registerChallenges(
                 // Daily
-                new CommonShardChallenge(this),
-                new UncommonShardChallenge(this),
                 new BlocksBrokenChallenge(this),
+                new RegradeChallenge(this, Enchantment.DIG_SPEED, ChallengeType.DAILY, 2, 10, new TreeSet<>(Collections.singletonList(1.0))){},
+                new RegradeChallenge(this, Enchantment.LOOT_BONUS_BLOCKS, ChallengeType.DAILY, 2, 10, new TreeSet<>(Collections.singletonList(1.0))){},
                 new SpecificMineChallenge(this, ChallengeType.DAILY,"H", "H Mine Challenge", 10000, cu.generateMilestones(10000, 1000)){},
                 new SpecificMineChallenge(this, ChallengeType.DAILY,"J", "J Mine Challenge", 10000, cu.generateMilestones(10000, 1000)){},
                 new SpecificMineChallenge(this, ChallengeType.DAILY,"K", "K Mine Challenge", 10000, cu.generateMilestones(10000, 1000)){},
@@ -74,22 +73,20 @@ public class JunkiePass extends JavaPlugin {
                 // Premium
                 //
                 new CommandChallenge(this, "/mine", "/mine Challenge", "Use the /mine command.", 1, 10){},
-                new CommandChallenge(this, "/cshop", "/cshop Challenge", "Use the /cshop command.", 1, 10){},
-                new CommandChallenge(this, "/ench", "/ench Challenge", "Use the /enchant command.", 1, 10){},
+                new CommandChallenge(this, "/ench", "/ench Challenge", "Use the /ench command.", 1, 10){},
                 new SyncChallenge(this),
                 new TogglePMChallenge(this),
                 new ToggleMentionsChallenge(this),
                 new CommandChallenge(this, "/vote", "/vote Challenge", "Use the /vote command.", 1, 10){},
-                new CommandChallenge(this, "/core", "/core Challenge", "Use the /core command.", 1, 10){},
+                new CommandChallenge(this, "/generator", "/core Challenge", "Use the /core command.", 1, 10){},
                 //
 
                 //
-                new ShardRollChallenge(this, ShardType.COMMON, 10){},
-                new ShardRollChallenge(this, ShardType.UNCOMMON, 5){},
-                new ShardRollChallenge(this, ShardType.RARE, 3){},
-                new ShardRollChallenge(this, ShardType.LEGENDARY, 2){},
-                new ShardRollChallenge(this, ShardType.JUNKIE, 1){},
+                new RegradeChallenge(this, Enchantment.DIG_SPEED, ChallengeType.PAID, 10, 30, cu.generateMilestones(10, 1)){},
+                new RegradeChallenge(this, Enchantment.LOOT_BONUS_BLOCKS, ChallengeType.PAID, 10, 30, cu.generateMilestones(10, 1)){},
+                //
 
+                //
                 new MineBombChallenge(this),
                 new NukeChallenge(this),
 
@@ -119,7 +116,6 @@ public class JunkiePass extends JavaPlugin {
                 //
         );
 
-        junkiePassMenu = new JunkiePassMenu(this);
         challengesMenu = new ChallengesMenu(this);
         dailyChallengeMenu = new DailyChallengeMenu(this);
         paidChallengeMenu = new PaidChallengeMenu(this);
@@ -158,10 +154,6 @@ public class JunkiePass extends JavaPlugin {
 
     public ChallengeManager getChallengeManager() {
         return challengeManager;
-    }
-
-    public JunkiePassMenu getJunkiePassMenu() {
-        return junkiePassMenu;
     }
 
     public ChallengesMenu getChallengesMenu() {

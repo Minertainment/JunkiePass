@@ -33,7 +33,7 @@ public class JunkiePassCommand extends AthenaBukkitCommand {
         if (args.argsLength() == 0) {
             if (!(sender instanceof Player)) return;
             Player player = (Player) sender;
-            plugin.getJunkiePassMenu().open(player);
+            plugin.getTierMenu().open(player);
         }
 
         if (args.argsLength() == 1) {

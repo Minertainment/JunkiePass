@@ -21,8 +21,6 @@ public class CommandChallenge extends Challenge {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
 
-        if (!profile.isPaid()) return;
-
         if (!event.getMessage().equalsIgnoreCase(command)) return;
 
         ChallengeData data;

@@ -4,7 +4,7 @@ import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.challenges.Challenge;
 import com.minejunkie.junkiepass.challenges.ChallengeData;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
-import com.minertainment.athena.menu.PlayerMenu;
+import com.minertainment.athena.plugin.bukkit.menu.PlayerMenu;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,7 +39,7 @@ public class DailyChallengeMenu extends PlayerMenu {
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();
-                    plugin.getJunkiePassMenu().open(player);
+                    plugin.getTierMenu().open(player);
                 }
         );
 
@@ -65,7 +65,7 @@ public class DailyChallengeMenu extends PlayerMenu {
     }
 
     @Override
-    public void onOpen(Player player, Inventory inventory) {
+    public void onOpen(Player player, Inventory inventory, Object... args) {
         JunkiePassProfile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
         update(profile, inventory);
     }

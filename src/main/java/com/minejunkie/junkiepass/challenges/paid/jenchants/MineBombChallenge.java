@@ -18,8 +18,6 @@ public class MineBombChallenge extends Challenge {
     public void onMineBomb(MineBombExplodeEvent event) {
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
 
-        if (!profile.isPaid()) return;
-
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;
         if (!data.isComplete()) increment(profile, event.getPlayer(), data, 1);

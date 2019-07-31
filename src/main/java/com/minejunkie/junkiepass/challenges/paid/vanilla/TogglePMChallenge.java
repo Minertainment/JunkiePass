@@ -38,8 +38,6 @@ public class TogglePMChallenge extends Challenge {
             if (!plugin.getProfileManager().isLoaded(packet.getPlayer()) || Bukkit.getPlayer(packet.getPlayer()) == null) return;
             JunkiePassProfile profile = plugin.getProfileManager().getProfile(packet.getPlayer());
 
-            if (!profile.isPaid()) return;
-
             ChallengeData data;
             if ((data = getChallengeData(profile)) == null) return;
             if (!data.isComplete()) increment(profile, Bukkit.getPlayer(packet.getPlayer()), data,1);

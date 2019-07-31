@@ -26,6 +26,9 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         if (!plugin.getProfileManager().isLoaded(player.getUniqueId())) return;
         JunkiePassProfile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
+        if (profile.getPaidChallenges().isEmpty())
+            plugin.getChallengeManager().getPaidChallenges().forEach((challenge -> profile.addPaidChallenge(challenge.getClass())));
+
         boolean newDaily = false;
 
         if (profile.getLastDaily() == 0) newDaily = true;

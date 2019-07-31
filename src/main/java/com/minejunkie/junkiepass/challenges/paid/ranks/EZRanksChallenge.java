@@ -18,7 +18,6 @@ public class EZRanksChallenge extends Challenge {
     public void onRankup(RankupEvent event) {
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
 
-        if (!profile.isPaid()) return;
         if (!event.getNewRank().equalsIgnoreCase("Z")) return;
 
         ChallengeData data;

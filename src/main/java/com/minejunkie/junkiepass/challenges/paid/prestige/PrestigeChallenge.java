@@ -21,8 +21,6 @@ public class PrestigeChallenge extends Challenge {
     public void onPrestige(EZPrestigeEvent event) {
         JunkiePassProfile profile = getProfile(event.getPlayer().getUniqueId());
 
-        if (!profile.isPaid()) return;
-
         if (event.getNewPrestige().getPrestige() < prestige) return;
 
         ChallengeData data;

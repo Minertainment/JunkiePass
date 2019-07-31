@@ -22,7 +22,6 @@ public class VoteChallenge extends Challenge {
         if ((player = Bukkit.getPlayer(event.getVote().getUsername())) == null) return;
 
         JunkiePassProfile profile = getProfile(player.getUniqueId());
-        if (!profile.isPaid()) return;
 
         ChallengeData data;
         if ((data = getChallengeData(profile)) == null) return;

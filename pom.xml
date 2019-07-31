@@ -51,17 +51,12 @@
         </dependency>
         <dependency>
             <groupId>com.minertainment.athena</groupId>
-            <artifactId>Athena</artifactId>
+            <artifactId>AthenaXM</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.minertainment.jcore</groupId>
             <artifactId>JCore</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.minertainment</groupId>
-            <artifactId>enchants</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -161,8 +156,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.minertainment</groupId>
-            <artifactId>JShards</artifactId>
+            <groupId>com.minejunkie.jregrade</groupId>
+            <artifactId>JRegrade</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

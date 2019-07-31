@@ -4,7 +4,8 @@ import com.minejunkie.junkiepass.JunkiePass;
 import com.minejunkie.junkiepass.challenges.Challenge;
 import com.minejunkie.junkiepass.challenges.ChallengeData;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
-import com.minertainment.athena.menu.PlayerMenu;
+import com.minertainment.athena.plugin.bukkit.menu.PlayerMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public class PaidChallengeMenu extends PlayerMenu {
                 e -> {
                     Player player = (Player) e.getWhoClicked();
                     player.closeInventory();
-                    plugin.getJunkiePassMenu().open(player);
+                    plugin.getTierMenu().open(player);
                 }
         );
 
@@ -53,27 +54,16 @@ public class PaidChallengeMenu extends PlayerMenu {
     }
 
     @Override
-    public void onOpen(Player player, Inventory inventory) {
+    public void onOpen(Player player, Inventory inventory, Object... args) {
         JunkiePassProfile profile = plugin.getProfileManager().getProfile(player.getUniqueId());
         update(profile, inventory, 1);
     }
 
     public void update(JunkiePassProfile profile, Inventory inventory, int page) {
-        Player player = profile.getPlayer();
+        Player player = Bukkit.getPlayer(profile.getUniqueId());
         getPersonalUpdates(player).clear();
         inventory.setItem(47, null);
         inventory.setItem(51, null);
-
-        if (!profile.isPaid()) {
-            inventory.setItem(22, new ItemBuilder(Material.STAINED_GLASS_PANE)
-                    .withDurability(14).buildMeta()
-                    .withDisplayName(ChatColor.RED + "No access!")
-                    .withLore(Arrays.asList(ChatColor.GRAY + "Purchase a Junkie Pass @", ChatColor.GOLD + "store.minejunkie.com"))
-                    .item().build()
-            );
-
-            return;
-        }
 
         int challenges = plugin.getChallengeManager().getPaidChallenges().size();
 
