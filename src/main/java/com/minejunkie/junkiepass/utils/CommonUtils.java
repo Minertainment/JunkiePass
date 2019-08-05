@@ -28,6 +28,7 @@ public class CommonUtils {
 
     public boolean redeemJunkiePass(JunkiePassProfile profile) {
         if (profile.isPaid()) return false;
+        profile.setClaimedTier(0);
         profile.setPaid(true);
         return true;
     }
@@ -36,6 +37,7 @@ public class CommonUtils {
         if (profile.isPaid()) return false;
         profile.setPaid(true);
         profile.setJunkiePassTier(level);
+        profile.setClaimedTier(0);
         profile.setJunkiePassExperience(level * 10);
         return true;
     }

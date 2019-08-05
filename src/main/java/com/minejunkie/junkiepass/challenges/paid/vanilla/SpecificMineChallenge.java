@@ -6,7 +6,7 @@ import com.minejunkie.junkiepass.challenges.ChallengeData;
 import com.minejunkie.junkiepass.challenges.ChallengeType;
 import com.minejunkie.junkiepass.profiles.JunkiePassProfile;
 import com.minertainment.event.CubedEvent;
-import com.vk2gpz.tokenenchant.event.TEBlockExplodeEvent;
+import com.minertainment.event.TEBlockExplodeEvent;
 import net.lightshard.prisonmines.PrisonMines;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
